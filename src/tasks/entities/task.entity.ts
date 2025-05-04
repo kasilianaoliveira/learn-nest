@@ -4,5 +4,3 @@ export class Task {
 	description: string;
 	completed: boolean;
 }
-
-export type TaskInput = Omit<Task, 'id'>;

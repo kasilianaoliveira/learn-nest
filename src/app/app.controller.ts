@@ -3,7 +3,7 @@ import { AppService } from './app.service';
 
 //voce pode adicionar um padrão de inicio pra ficar algo como:
 //localhost:3000/api/teste
-@Controller('/api')
+@Controller('/app')
 export class AppController {
 	constructor(private readonly appService: AppService) {}
 
