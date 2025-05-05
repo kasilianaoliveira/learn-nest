@@ -2,9 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TasksRepository } from './repositories/tasks.repository';
 
 @Injectable()
 export class TasksService {
+	constructor(private readonly tasksRepository: TasksRepository) {}
+
 	private readonly tasks: Task[] = [
 		{
 			id: 1,
@@ -12,18 +15,15 @@ export class TasksService {
 			description: 'Minha descrição',
 			completed: false,
 		},
-		{
-			id: 2,
-			name: 'comprar pão',
-			description: 'Minha descrição',
-			completed: false,
-		},
 	];
-	findAll() {
-		const tasks = this.tasks;
-		if (tasks.length > 0) return tasks;
+	async findAll() {
+		const allTasks = await this.tasksRepository.findAll();
 
-		throw new HttpException('Tasks not found', HttpStatus.NOT_FOUND);
+		if (!allTasks.length) {
+			throw new HttpException('Tasks not found', HttpStatus.NOT_FOUND);
+		}
+
+		return allTasks;
 	}
 
 	findOne(id: number) {
