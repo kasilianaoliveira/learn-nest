@@ -4,7 +4,6 @@ import {
 	Delete,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
 	Query,
@@ -17,16 +16,15 @@ import { CreateTaskDto } from './dto/create-task.dto';
 export class TasksController {
 	constructor(private readonly taskService: TasksService) {}
 	@Get()
-	findAllTasks(@Query() queryParams: any) {
-		console.log(queryParams);
+	findAllTasks() {
 		return this.taskService.findAll();
 	}
 
 	//pode ficar tbm assim: @Param('id') id: string)
 	//@Param() params: { id: string })
 	@Get(':id')
-	findOneTask(@Param('id') id: number) {
-		return this.taskService.findOne(Number(id));
+	findOneTask(@Param('id') id: string) {
+		return this.taskService.findOne(id);
 	}
 
 	@Post()
@@ -35,15 +33,12 @@ export class TasksController {
 	}
 
 	@Patch(':id')
-	updateTask(
-		@Param('id', ParseIntPipe) id: number,
-		@Body() body: UpdateTaskDto,
-	) {
+	updateTask(@Param('id') id: string, @Body() body: UpdateTaskDto) {
 		return this.taskService.update(id, body);
 	}
 
 	@Delete(':id')
-	deleteTask(@Param('id', ParseIntPipe) id: number) {
+	deleteTask(@Param('id') id: string) {
 		return this.taskService.delete(id);
 	}
 }

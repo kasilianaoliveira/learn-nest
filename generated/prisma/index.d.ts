@@ -2037,7 +2037,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
-    completed: boolean
+    completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -2046,7 +2046,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
-    completed: boolean
+    completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -2073,7 +2073,7 @@ export namespace Prisma {
     id?: string
     name: string
     description: string
-    completed: boolean
+    completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }

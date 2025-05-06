@@ -18,7 +18,7 @@ model Task {
   id          String   @id @default(uuid())
   name        String
   description String
-  completed   Boolean
+  completed   Boolean  @default(false) 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }

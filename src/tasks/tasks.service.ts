@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksRepository } from './repositories/tasks.repository';
@@ -8,14 +7,6 @@ import { TasksRepository } from './repositories/tasks.repository';
 export class TasksService {
 	constructor(private readonly tasksRepository: TasksRepository) {}
 
-	private readonly tasks: Task[] = [
-		{
-			id: 1,
-			name: 'sujeito programador',
-			description: 'Minha descrição',
-			completed: false,
-		},
-	];
 	async findAll() {
 		const allTasks = await this.tasksRepository.findAll();
 
@@ -26,51 +17,57 @@ export class TasksService {
 		return allTasks;
 	}
 
-	findOne(id: number) {
-		const findItem = this.tasks.find((item) => item.id === id);
-		if (findItem) return findItem;
+	async findOne(id: string) {
+		const findItem = await this.tasksRepository.findById(id);
 
-		throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-	}
-
-	create(createTaskDTO: CreateTaskDto) {
-		const newId = this.tasks.length + 1;
-
-		const newTask = {
-			id: newId,
-			...createTaskDTO,
-			completed: false,
-		};
-		this.tasks.push(newTask);
-		return this.tasks;
-	}
-
-	delete(id: number) {
-		const indexTaskId = this.tasks.findIndex((item) => item.id === id);
-
-		if (indexTaskId < 0) {
-			throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-		}
-		this.tasks.splice(indexTaskId, 1);
-		return {
-			message: 'Tarefa deletada com sucesso!',
-		};
-	}
-
-	update(id: number, updateTaskDto: UpdateTaskDto) {
-		const taskIndex = this.tasks.findIndex((task) => task.id === id);
-
-		if (taskIndex < 0) {
+		if (!findItem) {
 			throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
 		}
 
-		const taskItem = this.tasks[taskIndex];
+		return findItem;
+	}
 
-		this.tasks[taskIndex] = {
-			...taskItem,
-			...updateTaskDto,
-		};
+	async create(createTaskDTO: CreateTaskDto) {
+		return await this.tasksRepository.create(createTaskDTO);
+	}
 
-		return this.tasks[taskIndex];
+	async delete(id: string) {
+		const task = await this.tasksRepository.findById(id);
+		if (!task) {
+			throw new HttpException(
+				`Task with id ${id} not found.`,
+				HttpStatus.NOT_FOUND,
+			);
+		}
+
+		try {
+			return await this.tasksRepository.delete(id);
+		} catch (error) {
+			console.log(error);
+			throw new HttpException(
+				'Error deleting task',
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async update(id: string, updateTaskDto: UpdateTaskDto) {
+		const task = await this.tasksRepository.findById(id);
+		if (!task) {
+			throw new HttpException(
+				`Task with id ${id} not found.`,
+				HttpStatus.NOT_FOUND,
+			);
+		}
+
+		try {
+			return await this.tasksRepository.update(id, updateTaskDto);
+		} catch (error) {
+			console.log(error);
+			throw new HttpException(
+				'Error updating task',
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
 	}
 }
